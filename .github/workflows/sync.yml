@@ -1,24 +1,19 @@
-name: Sync Douban to Notion
+name: Douban to Notion Sync
 
 on:
   schedule:
     - cron: '0 16 * * *'  # 每天北京时间00:00运行（UTC 16:00）
-  workflow_dispatch:
+  workflow_dispatch:     # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Sync Douban Movies & TV
+        uses: lizheming/doumark-action@master
         with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4
-      - name: Run sync script
-        env:
-          DOUBAN_USERNAME: ${{ secrets.DOUBAN_USERNAME }}
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: python main.py
+          id: 220107525                  # 您的豆瓣用户ID
+          type: movie                    # 只同步电影/电视剧（包括想看/正在看/看过）
+          format: notion                 # 输出到Notion
+          dir: ${{ secrets.NOTION_DATABASE_ID }}  # Notion数据库ID
+          notion_token: ${{ secrets.NOTION_TOKEN }}  # Notion Token
