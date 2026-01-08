@@ -2,18 +2,39 @@ name: Douban to Notion Sync
 
 on:
   schedule:
-    - cron: '0 16 * * *'  # 每天北京时间00:00运行（UTC 16:00）
-  workflow_dispatch:     # 支持手动触发
+    - cron: '0 16 * * *'  # 每天北京时间 00:00 运行（UTC 16:00，可根据需要调整）
+  workflow_dispatch:      # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync Douban Movies & TV
+      - name: Sync 想看 (Wish/Mark)
         uses: lizheming/doumark-action@master
         with:
-          id: 220107525                  # 您的豆瓣用户ID
-          type: movie                    # 只同步电影/电视剧（包括想看/正在看/看过）
-          format: notion                 # 输出到Notion
-          dir: ${{ secrets.NOTION_DATABASE_ID }}  # Notion数据库ID
-          notion_token: ${{ secrets.NOTION_TOKEN }}  # Notion Token
+          id: 220107525                  # 您的豆瓣用户 ID
+          type: movie                    # 同步电影/电视剧
+          status: mark                   # 想看
+          format: notion
+          dir: ${{ secrets.NOTION_DATABASE_ID }}  # Notion 数据库 ID（模板复制后的）
+          notion_token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Sync 正在看 (Doing)
+        uses: lizheming/doumark-action@master
+        with:
+          id: 220107525
+          type: movie
+          status: doing                  # 正在看
+          format: notion
+          dir: ${{ secrets.NOTION_DATABASE_ID }}
+          notion_token: ${{ secrets.NOTION_TOKEN }}
+
+      - name: Sync 看过 (Done/Collect)
+        uses: lizheming/doumark-action@master
+        with:
+          id: 220107525
+          type: movie
+          status: done                   # 看过（默认值，可省略）
+          format: notion
+          dir: ${{ secrets.NOTION_DATABASE_ID }}
+          notion_token: ${{ secrets.NOTION_TOKEN }}
